@@ -77,8 +77,13 @@ abstract class CameraState {
       sensor: previous.sensor == Sensors.back ? Sensors.front : Sensors.back,
       type: type ?? SensorType.wideAngle,
     );
+
     await cameraContext.setSensorConfig(next);
 
+    if (aspectRatio != null) {
+      await next.setAspectRatio(aspectRatio);
+    }
+    
     if (zoom != null) {
       await next.setZoom(zoom);
     }

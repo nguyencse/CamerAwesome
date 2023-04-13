@@ -461,8 +461,6 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder> with WidgetsBindi
                         key: _cameraPreviewKey,
                         previewFit: widget.previewFit,
                         state: snapshot.requireData,
-                        padding: widget.previewPadding,
-                        alignment: widget.previewAlignment,
                         onPreviewTap: widget.onPreviewTapBuilder?.call(snapshot.requireData) ??
                             OnPreviewTap(
                               onTap: (position, flutterPreviewSize, pixelPreviewSize) {

@@ -304,9 +304,21 @@
     for ( AVCaptureDeviceFormat *format in [_captureDevice formats] ) {
         for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
             // NSLog(@"Format %@",format);
-            if ( range.maxFrameRate == fps ) {
-                bestFormat = format;
-                bestFrameRateRange = range;
+
+            CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
+            NSInteger height = dimensions.height;
+            
+            if (_cameraSensor == Front) {
+                // hard 1080p for front camera ios
+                if ( range.maxFrameRate == fps && height == 1080 ) {
+                    bestFormat = format;
+                    bestFrameRateRange = range;
+                }
+            } else {
+                if ( range.maxFrameRate == fps ) {
+                    bestFormat = format;
+                    bestFrameRateRange = range;
+                }
             }
         }
     }
