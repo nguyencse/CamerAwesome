@@ -79,14 +79,20 @@ abstract class CameraState {
     );
     await cameraContext.setSensorConfig(next);
 
-    if (aspectRatio != null) {
-      await next.setAspectRatio(aspectRatio);
-    }
     if (zoom != null) {
       await next.setZoom(zoom);
     }
     if (flash != null) {
       await next.setFlashMode(flash);
+    }
+
+    if (cameraContext.frameRate != null) {
+      // if (next.sensor == Sensors.front) {
+      //   await cameraContext.setPreviewSize(1440, 1920);
+      // } else {
+      //   await cameraContext.setPreviewSize(1080, 1920);
+      // }
+      await cameraContext.setFPS(cameraContext.frameRate!);
     }
   }
 
@@ -142,6 +148,5 @@ abstract class CameraState {
     return cameraContext.textureId();
   }
 
-  AnalysisController? get analysisController =>
-      cameraContext.analysisController;
+  AnalysisController? get analysisController => cameraContext.analysisController;
 }

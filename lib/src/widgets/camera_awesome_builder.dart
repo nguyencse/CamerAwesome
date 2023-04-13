@@ -116,6 +116,8 @@ class CameraAwesomeBuilder extends StatefulWidget {
   /// do image analysis
   final bool showPreview;
 
+  final int? frameRate;
+
   const CameraAwesomeBuilder._({
     required this.sensor,
     required this.flashMode,
@@ -140,6 +142,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     this.previewPadding = EdgeInsets.zero,
     this.previewAlignment = Alignment.center,
     this.showPreview = true,
+    this.frameRate,
   });
 
   /// Use the camera with the built-in interface.
@@ -191,6 +194,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     Widget Function(CameraState state)? middleContentBuilder,
     EdgeInsets previewPadding = EdgeInsets.zero,
     Alignment previewAlignment = Alignment.center,
+    int? frameRate,
   }) : this._(
           sensor: sensor,
           flashMode: flashMode,
@@ -222,6 +226,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
           theme: theme ?? AwesomeTheme(),
           previewPadding: previewPadding,
           previewAlignment: previewAlignment,
+          frameRate: frameRate,
         );
 
   /// 🚧 Experimental
@@ -248,6 +253,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     AwesomeTheme? theme,
     EdgeInsets previewPadding = EdgeInsets.zero,
     Alignment previewAlignment = Alignment.center,
+    int? frameRate,
   }) : this._(
           sensor: sensor,
           flashMode: flashMode,
@@ -271,6 +277,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
           theme: theme ?? AwesomeTheme(),
           previewPadding: previewPadding,
           previewAlignment: previewAlignment,
+          frameRate: frameRate,
         );
 
   /// Use this constructor when you don't want to take pictures or record videos.
@@ -332,7 +339,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     required OnImageForAnalysis onImageForAnalysis,
     AnalysisConfig? imageAnalysisConfig,
   }) : this._(
-    sensor: sensor,
+          sensor: sensor,
           flashMode: flashMode,
           zoom: zoom,
           mirrorFrontCamera: false,
@@ -363,8 +370,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
   }
 }
 
-class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
-    with WidgetsBindingObserver {
+class _CameraWidgetBuilder extends State<CameraAwesomeBuilder> with WidgetsBindingObserver {
   late CameraContext _cameraContext;
   final _cameraPreviewKey = GlobalKey<AwesomeCameraPreviewState>();
 
@@ -394,8 +400,7 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        _cameraContext.state
-            .when(onVideoRecordingMode: (mode) => mode.stopRecording());
+        _cameraContext.state.when(onVideoRecordingMode: (mode) => mode.stopRecording());
         break;
     }
     super.didChangeAppLifecycleState(state);
@@ -417,14 +422,12 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
       enablePhysicalButton: widget.enablePhysicalButton,
       filter: widget.filter ?? AwesomeFilter.None,
       initialCaptureMode: widget.saveConfig?.initialCaptureMode ??
-          (widget.showPreview
-              ? CaptureMode.preview
-              : CaptureMode.analysis_only),
+          (widget.showPreview ? CaptureMode.preview : CaptureMode.analysis_only),
       saveConfig: widget.saveConfig,
       onImageForAnalysis: widget.onImageForAnalysis,
       analysisConfig: widget.imageAnalysisConfig,
-      exifPreferences:
-          widget.exifPreferences ?? ExifPreferences(saveGPSLocation: false),
+      exifPreferences: widget.exifPreferences ?? ExifPreferences(saveGPSLocation: false),
+      frameRate: widget.frameRate,
     );
 
     // Initial CameraState is always PreparingState
@@ -438,14 +441,10 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
       child: StreamBuilder<CameraState>(
         stream: _cameraContext.state$,
         builder: (context, snapshot) {
-          if (!snapshot.hasData ||
-              snapshot.data!.captureMode == null ||
-              snapshot.requireData is PreparingCameraState) {
+          if (!snapshot.hasData || snapshot.data!.captureMode == null || snapshot.requireData is PreparingCameraState) {
             return widget.progressIndicator ??
                 Center(
-                  child: Platform.isIOS
-                      ? const CupertinoActivityIndicator()
-                      : const CircularProgressIndicator(),
+                  child: Platform.isIOS ? const CupertinoActivityIndicator() : const CircularProgressIndicator(),
                 );
           }
           return Stack(
@@ -464,32 +463,27 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
                         state: snapshot.requireData,
                         padding: widget.previewPadding,
                         alignment: widget.previewAlignment,
-                        onPreviewTap: widget.onPreviewTapBuilder
-                                ?.call(snapshot.requireData) ??
+                        onPreviewTap: widget.onPreviewTapBuilder?.call(snapshot.requireData) ??
                             OnPreviewTap(
-                              onTap: (position, flutterPreviewSize,
-                                  pixelPreviewSize) {
+                              onTap: (position, flutterPreviewSize, pixelPreviewSize) {
                                 snapshot.requireData.when(
-                                  onPhotoMode: (photoState) =>
-                                      photoState.focusOnPoint(
+                                  onPhotoMode: (photoState) => photoState.focusOnPoint(
                                     flutterPosition: position,
                                     pixelPreviewSize: pixelPreviewSize,
                                     flutterPreviewSize: flutterPreviewSize,
                                   ),
-                                  onVideoMode: (videoState) =>
-                                      videoState.focusOnPoint(
+                                  onVideoMode: (videoState) => videoState.focusOnPoint(
                                     flutterPosition: position,
                                     pixelPreviewSize: pixelPreviewSize,
                                     flutterPreviewSize: flutterPreviewSize,
                                   ),
-                                  onVideoRecordingMode: (videoRecState) =>
-                                      videoRecState.focusOnPoint(
+                                  onVideoRecordingMode: (videoRecState) => videoRecState.focusOnPoint(
                                     flutterPosition: position,
+                                    // pixelPreviewSize: pixelPreviewSize,
                                     pixelPreviewSize: pixelPreviewSize,
                                     flutterPreviewSize: flutterPreviewSize,
                                   ),
-                                  onPreviewMode: (previewState) =>
-                                      previewState.focusOnPoint(
+                                  onPreviewMode: (previewState) => previewState.focusOnPoint(
                                     flutterPosition: position,
                                     pixelPreviewSize: pixelPreviewSize,
                                     flutterPreviewSize: flutterPreviewSize,
@@ -497,12 +491,10 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder>
                                 );
                               },
                             ),
-                        onPreviewScale: widget.onPreviewScaleBuilder
-                                ?.call(snapshot.requireData) ??
+                        onPreviewScale: widget.onPreviewScaleBuilder?.call(snapshot.requireData) ??
                             OnPreviewScale(
                               onScale: (scale) {
-                                snapshot.requireData.sensorConfig
-                                    .setZoom(scale);
+                                snapshot.requireData.sensorConfig.setZoom(scale);
                               },
                             ),
                         interfaceBuilder: widget.builder,

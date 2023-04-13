@@ -98,6 +98,9 @@
   PreviewSize *firstPreviewSize = [qualities count] > 0 ? qualities.lastObject : [PreviewSize makeWithWidth:@3840 height:@2160];
   
   CGSize firstSize = CGSizeMake([firstPreviewSize.width floatValue], [firstPreviewSize.height floatValue]);
+
+  
+
   [self setCameraPresset:firstSize];
 }
 
@@ -167,9 +170,11 @@
   NSString *presetSelected;
   if (!CGSizeEqualToSize(CGSizeZero, preview)) {
     // Try to get the quality requested
+    NSLog(@"Try to get the quality requested");
     presetSelected = [CameraQualities selectVideoCapturePresset:preview session:_captureSession device:_captureDevice];
   } else {
     // Compute the best quality supported by the camera device
+    NSLog(@"Compute the best quality supported by the camera device");
     presetSelected = [CameraQualities selectVideoCapturePresset:_captureSession device:_captureDevice];
   }
   [_captureSession setSessionPreset:presetSelected];
@@ -289,6 +294,33 @@
   } else {
     *error = [FlutterError errorWithCode:@"BRIGHTNESS_NOT_SET" message:@"can't set the brightness value" details:[brightnessError localizedDescription]];
   }
+}
+
+- (void)configFPS:(NSNumber *)frameRate error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error{
+    int fps = [frameRate intValue];
+
+    AVCaptureDeviceFormat *bestFormat = nil;
+    AVFrameRateRange *bestFrameRateRange = nil;
+    for ( AVCaptureDeviceFormat *format in [_captureDevice formats] ) {
+        for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
+            // NSLog(@"Format %@",format);
+            if ( range.maxFrameRate == fps ) {
+                bestFormat = format;
+                bestFrameRateRange = range;
+            }
+        }
+    }
+    
+    NSLog(@"nguyenny ==> best format %@",bestFormat);
+    
+    if ( bestFormat ) {
+        if ( [_captureDevice lockForConfiguration:NULL] == YES ) {
+            _captureDevice.activeFormat = bestFormat;
+            _captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
+            _captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+            [_captureDevice unlockForConfiguration];
+        }
+    }
 }
 
 - (void)setMirrorFrontCamera:(bool)value error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {

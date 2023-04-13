@@ -31,16 +31,18 @@ class CameraPage extends StatelessWidget {
           saveConfig: SaveConfig.photoAndVideo(
             photoPathBuilder: () => path(CaptureMode.photo),
             videoPathBuilder: () => path(CaptureMode.video),
-            initialCaptureMode: CaptureMode.photo,
+            initialCaptureMode: CaptureMode.video,
           ),
-          enablePhysicalButton: true,
-          filter: AwesomeFilter.AddictiveRed,
+          enablePhysicalButton: false,
+          enableAudio: false,
+          // filter: AwesomeFilter.AddictiveRed,
           flashMode: FlashMode.auto,
-          aspectRatio: CameraAspectRatios.ratio_16_9,
+          // aspectRatio: CameraAspectRatios.ratio_16_9,
           previewFit: CameraPreviewFit.fitWidth,
           onMediaTap: (mediaCapture) {
             OpenFile.open(mediaCapture.filePath);
           },
+          frameRate: 60,
         ),
       ),
     );

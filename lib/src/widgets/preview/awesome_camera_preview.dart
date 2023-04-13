@@ -77,27 +77,31 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
       }
     });
 
-    _sensorConfigSubscription =
-        widget.state.sensorConfig$.listen((sensorConfig) {
+    _sensorConfigSubscription = widget.state.sensorConfig$.listen((sensorConfig) {
       _aspectRatioSubscription?.cancel();
-      _aspectRatioSubscription =
-          sensorConfig.aspectRatio$.listen((event) async {
+      _aspectRatioSubscription = sensorConfig.aspectRatio$.listen((event) async {
         final previewSize = await widget.state.previewSize();
         if ((_previewSize != previewSize || _aspectRatio != event) && mounted) {
           setState(() {
             _aspectRatio = event;
+
             switch (event) {
               case CameraAspectRatios.ratio_16_9:
                 _aspectRatioValue = 16 / 9;
+                print('nguyenny ==> _aspectRatioValue: 16/9');
                 break;
               case CameraAspectRatios.ratio_4_3:
                 _aspectRatioValue = 4 / 3;
+                print('nguyenny ==> _aspectRatioValue: 4/3');
                 break;
               case CameraAspectRatios.ratio_1_1:
                 _aspectRatioValue = 1;
+                print('nguyenny ==> _aspectRatioValue: 1/1');
                 break;
             }
             _previewSize = previewSize;
+            print(
+                'nguyenny ==> _aspectRatioSubscription _previewSize: width: ${previewSize.width} - height: ${previewSize.height}');
           });
         }
       });
@@ -116,9 +120,7 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
     if (_textureId == null || _previewSize == null || _aspectRatio == null) {
       return widget.loadingWidget ??
           Center(
-            child: Platform.isIOS
-                ? const CupertinoActivityIndicator()
-                : const CircularProgressIndicator(),
+            child: Platform.isIOS ? const CupertinoActivityIndicator() : const CircularProgressIndicator(),
           );
     }
 
@@ -129,11 +131,11 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
           builder: (_, constraints) {
             final size = Size(_previewSize!.width, _previewSize!.height);
 
+            print('nguyenny ==> LayoutBuilder size: width: ${_previewSize!.width} - height: ${_previewSize!.height}');
+
             final constrainedSize = Size(
               constraints.maxWidth - widget.padding.left - widget.padding.right,
-              constraints.maxHeight -
-                  widget.padding.top -
-                  widget.padding.bottom,
+              constraints.maxHeight - widget.padding.top - widget.padding.bottom,
             );
 
             final ratioW = constrainedSize.width / size.width;
@@ -151,9 +153,7 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
               case CameraPreviewFit.cover:
                 final previewRatio = _previewSize!.width / _previewSize!.height;
                 maxSize = Size(
-                  previewRatio > 1
-                      ? constrainedSize.height / previewRatio
-                      : constrainedSize.height * previewRatio,
+                  previewRatio > 1 ? constrainedSize.height / previewRatio : constrainedSize.height * previewRatio,
                   constrainedSize.height,
                 );
 
@@ -164,19 +164,14 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
                 break;
             }
 
-            final center = Size(constrainedSize.width, constrainedSize.height)
-                .center(Offset.zero);
-            _flutterPreviewSize =
-                PreviewSize(width: maxSize.width, height: maxSize.height);
+            final center = Size(constrainedSize.width, constrainedSize.height).center(Offset.zero);
+            _flutterPreviewSize = PreviewSize(width: maxSize.width, height: maxSize.height);
             // croppedPreviewSize takes care of the aspectRatio
-            final croppedPreviewSize =
-                _croppedPreviewSize(constrainedSize, _aspectRatioValue!);
+            final croppedPreviewSize = _croppedPreviewSize(constrainedSize, _aspectRatioValue!);
             _previousCroppedSize = _croppedSize;
-            _croppedSize =
-                Size(croppedPreviewSize.width, croppedPreviewSize.height);
+            _croppedSize = Size(croppedPreviewSize.width, croppedPreviewSize.height);
             // if croppedSize was null before
-            _previousCroppedSize ??=
-                Size(_croppedSize!.width, _croppedSize!.height);
+            _previousCroppedSize ??= Size(_croppedSize!.width, _croppedSize!.height);
 
             final previewTexture = Texture(textureId: _textureId!);
 
@@ -193,15 +188,13 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
                       width: _flutterPreviewSize!.width,
                       height: _flutterPreviewSize!.height,
                       child: AwesomeCameraGestureDetector(
-                        onPreviewTapBuilder:
-                            widget.onPreviewTap != null && _previewSize != null
-                                ? OnPreviewTapBuilder(
-                                    pixelPreviewSizeGetter: () => _previewSize!,
-                                    flutterPreviewSizeGetter: () =>
-                                        croppedPreviewSize,
-                                    onPreviewTap: widget.onPreviewTap!,
-                                  )
-                                : null,
+                        onPreviewTapBuilder: widget.onPreviewTap != null && _previewSize != null
+                            ? OnPreviewTapBuilder(
+                                pixelPreviewSizeGetter: () => _previewSize!,
+                                flutterPreviewSizeGetter: () => croppedPreviewSize,
+                                onPreviewTap: widget.onPreviewTap!,
+                              )
+                            : null,
                         onPreviewScale: widget.onPreviewScale,
                         initialZoom: widget.state.sensorConfig.zoom,
                         // if there is no filter, just display texture
@@ -209,8 +202,7 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
                         child: StreamBuilder<AwesomeFilter>(
                             stream: widget.state.filter$,
                             builder: (context, snapshot) {
-                              return snapshot.hasData &&
-                                      snapshot.data != AwesomeFilter.None
+                              return snapshot.hasData && snapshot.data != AwesomeFilter.None
                                   ? ColorFiltered(
                                       colorFilter: snapshot.data!.preview,
                                       child: previewTexture,
@@ -230,11 +222,8 @@ class AwesomeCameraPreviewState extends State<AwesomeCameraPreview> {
               child: Center(child: preview),
             );
 
-            if ([
-              CameraPreviewFit.fitHeight,
-              CameraPreviewFit.fitWidth,
-              CameraPreviewFit.contain
-            ].contains(widget.previewFit)) {
+            if ([CameraPreviewFit.fitHeight, CameraPreviewFit.fitWidth, CameraPreviewFit.contain]
+                .contains(widget.previewFit)) {
               return Stack(children: [
                 Positioned.fill(
                   child: TweenAnimationBuilder<Size>(

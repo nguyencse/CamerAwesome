@@ -941,6 +941,25 @@ void CameraInterfaceSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<C
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CameraInterface.configFPS"
+        binaryMessenger:binaryMessenger
+        codec:CameraInterfaceGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(configFPS:error:)], @"CameraInterface api (%@) doesn't respond to @selector(configFPS:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_frameRate = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api configFPS:arg_frameRate error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.CameraInterface.getMaxZoom"
         binaryMessenger:binaryMessenger
         codec:CameraInterfaceGetCodec()];

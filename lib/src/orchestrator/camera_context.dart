@@ -58,6 +58,8 @@ class CameraContext {
   /// [back] sensor frequently has flash while [front] does not for instance.
   ValueStream<SensorConfig> get sensorConfig$ => sensorConfigController.stream;
 
+  int? frameRate;
+
   CameraContext._({
     required this.initialCaptureMode,
     required this.sensorConfigController,
@@ -67,6 +69,7 @@ class CameraContext {
     required this.filterController,
     required this.enablePhysicalButton,
     this.onPermissionsResult,
+    this.frameRate,
   }) {
     var preparingState = PreparingCameraState(
       this,
@@ -87,6 +90,7 @@ class CameraContext {
     required ExifPreferences exifPreferences,
     required AwesomeFilter filter,
     required bool enablePhysicalButton,
+    int? frameRate,
   }) : this._(
           initialCaptureMode: initialCaptureMode,
           sensorConfigController: BehaviorSubject.seeded(sensorConfig),
@@ -101,6 +105,7 @@ class CameraContext {
                 )
               : null,
           exifPreferences: exifPreferences,
+          frameRate: frameRate,
         );
 
   changeState(CameraState newState) async {
@@ -131,10 +136,17 @@ class CameraContext {
     filterController.add(newFilter);
   }
 
+  Future<void> setFPS(int frameRate) async {
+    await CamerawesomePlugin.configFPS(frameRate);
+  }
+
+  Future<void> setPreviewSize(int width, int height) async {
+    await CamerawesomePlugin.setPreviewSize(width, height);
+  }
+
   Future<void> setSensorConfig(SensorConfig newConfig) async {
     sensorConfigController.sink.add(newConfig);
-    if (sensorConfigController.hasValue &&
-        !identical(newConfig, sensorConfigController.value)) {
+    if (sensorConfigController.hasValue && !identical(newConfig, sensorConfigController.value)) {
       sensorConfigController.value.dispose();
     }
     await CamerawesomePlugin.setSensor(
@@ -193,8 +205,7 @@ class CameraContext {
       return CamerawesomePlugin.focusOnPoint(
         position: pixelPosition,
         previewSize: pixelPreviewSize,
-        androidFocusSettings: androidFocusSettings ??
-            AndroidFocusSettings(autoCancelDurationInMillis: 5000),
+        androidFocusSettings: androidFocusSettings ?? AndroidFocusSettings(autoCancelDurationInMillis: 5000),
       );
     }
   }
@@ -208,7 +219,6 @@ class CameraContext {
   }
 
   Future<int?> textureId() {
-    return CamerawesomePlugin.getPreviewTexture()
-        .then(((value) => value?.toInt()));
+    return CamerawesomePlugin.getPreviewTexture().then(((value) => value?.toInt()));
   }
 }

@@ -68,8 +68,7 @@ class PreparingCameraState extends CameraState {
   }) async {
     // wait user accept permissions to init widget completely on android
     if (Platform.isAndroid) {
-      _permissionStreamSub =
-          CamerawesomePlugin.listenPermissionResult()!.listen(
+      _permissionStreamSub = CamerawesomePlugin.listenPermissionResult()!.listen(
         (res) {
           if (res && !_isReady) {
             _init(
@@ -84,28 +83,22 @@ class PreparingCameraState extends CameraState {
       );
     }
     final grantedPermissions =
-        await CamerawesomePlugin.checkAndRequestPermissions(
-            cameraContext.exifPreferences.saveGPSLocation);
+        await CamerawesomePlugin.checkAndRequestPermissions(cameraContext.exifPreferences.saveGPSLocation);
     if (cameraContext.exifPreferences.saveGPSLocation &&
-        !(grantedPermissions?.contains(CamerAwesomePermission.location) ==
-            true)) {
+        !(grantedPermissions?.contains(CamerAwesomePermission.location) == true)) {
       cameraContext.exifPreferences = ExifPreferences(saveGPSLocation: false);
-      cameraContext.state
-          .when(onPhotoMode: (pm) => pm.shouldSaveGpsLocation(false));
+      cameraContext.state.when(onPhotoMode: (pm) => pm.shouldSaveGpsLocation(false));
     }
     if (onPermissionsResult != null) {
-      onPermissionsResult!(
-          grantedPermissions?.hasRequiredPermissions() == true);
+      onPermissionsResult!(grantedPermissions?.hasRequiredPermissions() == true);
     }
   }
 
   void initPhysicalButton() {
     _physicalButtonStreamSub?.cancel();
-    _physicalButtonStreamSub =
-        CamerawesomePlugin.listenPhysicalButton()!.listen(
+    _physicalButtonStreamSub = CamerawesomePlugin.listenPhysicalButton()!.listen(
       (res) async {
-        if (res == CameraPhysicalButton.volume_down ||
-            res == CameraPhysicalButton.volume_up) {
+        if (res == CameraPhysicalButton.volume_down || res == CameraPhysicalButton.volume_up) {
           cameraContext.state.when(
             onPhotoMode: (pm) => pm.takePhoto(),
             onVideoMode: (vm) => vm.startRecording(),
@@ -119,8 +112,7 @@ class PreparingCameraState extends CameraState {
   @override
   void setState(CaptureMode captureMode) {
     throw CameraNotReadyException(
-      message:
-          '''You can't change current state while camera is in PreparingCameraState''',
+      message: '''You can't change current state while camera is in PreparingCameraState''',
     );
   }
 
@@ -129,11 +121,17 @@ class PreparingCameraState extends CameraState {
   /////////////////////////////////////
 
   Future _startVideoMode() async {
+    print('nguyenny ==> _startVideoMode');
     await Future.delayed(const Duration(milliseconds: 500));
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
     );
+    if (cameraContext.frameRate != null) {
+      // TODO: nguyenny ==> hardcode size 1920x1080. Remove later
+      // await CamerawesomePlugin.setPreviewSize(1080, 1920);
+      await CamerawesomePlugin.configFPS(cameraContext.frameRate!);
+    }
     cameraContext.changeState(VideoCameraState.from(cameraContext));
 
     return CamerawesomePlugin.start();

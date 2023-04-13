@@ -11,14 +11,12 @@ class VideoCameraState extends CameraState {
     required this.filePathBuilder,
   }) : super(cameraContext);
 
-  factory VideoCameraState.from(CameraContext cameraContext) =>
-      VideoCameraState(
+  factory VideoCameraState.from(CameraContext cameraContext, {int? frameRate}) => VideoCameraState(
         cameraContext: cameraContext,
         filePathBuilder: cameraContext.saveConfig!.videoPathBuilder!,
       );
 
   final FilePathBuilder filePathBuilder;
-
   @override
   void setState(CaptureMode captureMode) {
     if (captureMode == CaptureMode.video) {
@@ -34,8 +32,7 @@ class VideoCameraState extends CameraState {
   /// of the photo capture (capturing, success/failure)
   Future<String> startRecording() async {
     String filePath = await filePathBuilder();
-    _mediaCapture = MediaCapture.capturing(
-        filePath: filePath, videoState: VideoState.started);
+    _mediaCapture = MediaCapture.capturing(filePath: filePath, videoState: VideoState.started);
     try {
       await CamerawesomePlugin.recordVideo(filePath);
     } on Exception catch (e) {

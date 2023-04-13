@@ -24,20 +24,15 @@ enum CameraRunningState { starting, started, stopping, stopped }
 
 /// Don't use this class directly. Instead, use [CameraAwesomeBuilder].
 class CamerawesomePlugin {
-  static const EventChannel _orientationChannel =
-      EventChannel('camerawesome/orientation');
+  static const EventChannel _orientationChannel = EventChannel('camerawesome/orientation');
 
-  static const EventChannel _permissionsChannel =
-      EventChannel('camerawesome/permissions');
+  static const EventChannel _permissionsChannel = EventChannel('camerawesome/permissions');
 
-  static const EventChannel _imagesChannel =
-      EventChannel('camerawesome/images');
+  static const EventChannel _imagesChannel = EventChannel('camerawesome/images');
 
-  static const EventChannel _luminosityChannel =
-      EventChannel('camerawesome/luminosity');
+  static const EventChannel _luminosityChannel = EventChannel('camerawesome/luminosity');
 
-  static const EventChannel _physicalButtonChannel =
-      EventChannel('camerawesome/physical_button');
+  static const EventChannel _physicalButtonChannel = EventChannel('camerawesome/physical_button');
 
   static Stream<CameraOrientations>? _orientationStream;
 
@@ -60,8 +55,7 @@ class CamerawesomePlugin {
   }
 
   static Future<bool> start() async {
-    if (currentState == CameraRunningState.started ||
-        currentState == CameraRunningState.starting) {
+    if (currentState == CameraRunningState.started || currentState == CameraRunningState.starting) {
       return true;
     }
     currentState = CameraRunningState.starting;
@@ -71,8 +65,7 @@ class CamerawesomePlugin {
   }
 
   static Future<bool> stop() async {
-    if (currentState == CameraRunningState.stopped ||
-        currentState == CameraRunningState.stopping) {
+    if (currentState == CameraRunningState.stopped || currentState == CameraRunningState.stopping) {
       return true;
     }
     _orientationStream = null;
@@ -90,8 +83,7 @@ class CamerawesomePlugin {
   static Stream<CameraOrientations>? getNativeOrientation() {
     _orientationStream ??= _orientationChannel
         .receiveBroadcastStream('orientationChannel')
-        .transform(StreamTransformer<dynamic, CameraOrientations>.fromHandlers(
-            handleData: (data, sink) {
+        .transform(StreamTransformer<dynamic, CameraOrientations>.fromHandlers(handleData: (data, sink) {
       CameraOrientations? newOrientation;
       switch (data) {
         case 'LANDSCAPE_LEFT':
@@ -116,9 +108,7 @@ class CamerawesomePlugin {
   static Stream<CameraPhysicalButton>? listenPhysicalButton() {
     _physicalButtonStream ??= _physicalButtonChannel
         .receiveBroadcastStream('physicalButtonChannel')
-        .transform(
-            StreamTransformer<dynamic, CameraPhysicalButton>.fromHandlers(
-                handleData: (data, sink) {
+        .transform(StreamTransformer<dynamic, CameraPhysicalButton>.fromHandlers(handleData: (data, sink) {
       CameraPhysicalButton? physicalButton;
       switch (data) {
         case 'VOLUME_UP':
@@ -137,8 +127,7 @@ class CamerawesomePlugin {
   static Stream<bool>? listenPermissionResult() {
     _permissionsStream ??= _permissionsChannel
         .receiveBroadcastStream('permissionsChannel')
-        .transform(StreamTransformer<dynamic, bool>.fromHandlers(
-            handleData: (data, sink) {
+        .transform(StreamTransformer<dynamic, bool>.fromHandlers(handleData: (data, sink) {
       sink.add(data);
     }));
     return _permissionsStream;
@@ -159,8 +148,7 @@ class CamerawesomePlugin {
   }
 
   static Stream<Map<String, dynamic>>? listenCameraImages() {
-    _imagesStream ??=
-        _imagesChannel.receiveBroadcastStream('imagesChannel').transform(
+    _imagesStream ??= _imagesChannel.receiveBroadcastStream('imagesChannel').transform(
       StreamTransformer<dynamic, Map<String, dynamic>>.fromHandlers(
         handleData: (data, sink) {
           sink.add(Map<String, dynamic>.from(data));
@@ -198,10 +186,7 @@ class CamerawesomePlugin {
 
   static Future<List<Size>> getSizes() async {
     final availableSizes = await CameraInterface().availableSizes();
-    return availableSizes
-        .whereType<PreviewSize>()
-        .map((e) => Size(e.width, e.height))
-        .toList();
+    return availableSizes.whereType<PreviewSize>().map((e) => Size(e.width, e.height)).toList();
   }
 
   static Future<num?> getPreviewTexture() {
@@ -209,8 +194,7 @@ class CamerawesomePlugin {
   }
 
   static Future<void> setPreviewSize(int width, int height) {
-    return CameraInterface().setPreviewSize(
-        PreviewSize(width: width.toDouble(), height: height.toDouble()));
+    return CameraInterface().setPreviewSize(PreviewSize(width: width.toDouble(), height: height.toDouble()));
   }
 
   static Future<void> refresh() {
@@ -348,7 +332,15 @@ class CamerawesomePlugin {
     return CameraInterface().setCorrection(brightness);
   }
 
-  /// returns the max zoom available on device
+  /// set FPS
+  static Future<void> configFPS(int frameRate) {
+    if (frameRate < 0) {
+      throw "Value must be bigger than 0";
+    }
+    return CameraInterface().configFPS(frameRate);
+  }
+
+  /// returns the max zoom available on devic
   static Future<num?> getMaxZoom() {
     return CameraInterface().getMaxZoom();
   }
@@ -432,22 +424,17 @@ class CamerawesomePlugin {
   // ---------------------------------------------------
   // UTILITY METHODS
   // ---------------------------------------------------
-  static Future<List<CamerAwesomePermission>?> checkAndRequestPermissions(
-      bool saveGpsLocation) async {
+  static Future<List<CamerAwesomePermission>?> checkAndRequestPermissions(bool saveGpsLocation) async {
     try {
       if (Platform.isAndroid) {
-        return CameraInterface()
-            .requestPermissions(saveGpsLocation)
-            .then((givenPermissions) {
+        return CameraInterface().requestPermissions(saveGpsLocation).then((givenPermissions) {
           return givenPermissions
-              .map((e) => CamerAwesomePermission.values
-                  .firstWhere((element) => element.name == e))
+              .map((e) => CamerAwesomePermission.values.firstWhere((element) => element.name == e))
               .toList();
         });
       } else if (Platform.isIOS) {
         // TODO iOS Return only permissions that were given
-        return CamerawesomePlugin.checkiOSPermissions()
-            .then((givenPermissions) => CamerAwesomePermission.values);
+        return CamerawesomePlugin.checkiOSPermissions().then((givenPermissions) => CamerAwesomePermission.values);
       }
     } catch (e) {
       printLog("failed to check permissions here...");

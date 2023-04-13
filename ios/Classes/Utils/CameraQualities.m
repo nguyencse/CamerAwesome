@@ -37,6 +37,7 @@
   } else if (presset == AVCaptureSessionPreset352x288) {
     return CGSizeMake(352, 288);
   } else {
+    NSLog(@"nguyenny ==> getSizeForPresset: CGSizeMake(1280, 720)");
     // Default to HD
     return CGSizeMake(1280, 720);
   }
@@ -53,12 +54,15 @@
       return currentPresset;
     }
   }
+
+  NSLog(@"nguyenny ==> computeBestPressetWithSession: AVCaptureSessionPreset1280x720");
   
   // Default to HD
   return AVCaptureSessionPreset1280x720;
 }
 
 + (NSString *)selectPresetForSize:(CGSize)size session:(AVCaptureSession *)session {
+  NSLog(@"nguyenny ==> selectPresetForSize: size.width:%i",size.width);
   if (size.width >= 2160 || size.height >= 3840) {
     if (@available(iOS 9.0, *)) {
       // we don't know the exact size, so we check if it can apply
@@ -81,8 +85,10 @@
   } else if (size.width == 288 && size.height == 352) {
     return AVCaptureSessionPreset352x288;
   } else {
+    NSLog(@"nguyenny ==> selectPresetForSize: AVCaptureSessionPreset1920x1080");
     // Default to HD
-    return AVCaptureSessionPreset1280x720;
+    return AVCaptureSessionPreset1920x1080;
+    // return AVCaptureSessionPreset1280x720;
   }
 }
 

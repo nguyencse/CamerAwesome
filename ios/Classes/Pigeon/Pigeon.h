@@ -210,6 +210,7 @@ NSObject<FlutterMessageCodec> *CameraInterfaceGetCodec(void);
 - (void)setMirrorFrontCameraMirror:(NSNumber *)mirror error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setSensorSensor:(NSString *)sensor deviceId:(nullable NSString *)deviceId error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setCorrectionBrightness:(NSNumber *)brightness error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)configFPS:(NSNumber *)frameRate error:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)getMaxZoomWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setCaptureModeMode:(NSString *)mode error:(FlutterError *_Nullable *_Nonnull)error;

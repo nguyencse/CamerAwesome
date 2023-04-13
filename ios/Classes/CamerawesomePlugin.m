@@ -193,6 +193,11 @@ FlutterEventSink physicalButtonEventSink;
 - (void)setCorrectionBrightness:(nonnull NSNumber *)brightness error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
   [_camera setBrightness:brightness error:error];
 }
+
+- (void)configFPS:(nonnull NSNumber *)frameRate error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+  [_camera configFPS:frameRate error:error];
+}
+
 - (void)setExifPreferencesExifPreferences:(ExifPreferences *)exifPreferences completion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion{
   [self.camera setExifPreferencesGPSLocation: exifPreferences.saveGPSLocation completion:completion];
 }
