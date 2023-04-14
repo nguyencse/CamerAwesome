@@ -172,6 +172,7 @@
     // Try to get the quality requested
     NSLog(@"Try to get the quality requested");
     presetSelected = [CameraQualities selectVideoCapturePresset:preview session:_captureSession device:_captureDevice];
+    NSLog(@"Try to get the quality requested%@",presetSelected);
   } else {
     // Compute the best quality supported by the camera device
     NSLog(@"Compute the best quality supported by the camera device");
@@ -303,22 +304,14 @@
     AVFrameRateRange *bestFrameRateRange = nil;
     for ( AVCaptureDeviceFormat *format in [_captureDevice formats] ) {
         for ( AVFrameRateRange *range in format.videoSupportedFrameRateRanges ) {
-            // NSLog(@"Format %@",format);
-
             CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription);
+            NSInteger width = dimensions.width;
             NSInteger height = dimensions.height;
             
-            if (_cameraSensor == Front) {
-                // hard 1080p for front camera ios
-                if ( range.maxFrameRate == fps && height == 1080 ) {
-                    bestFormat = format;
-                    bestFrameRateRange = range;
-                }
-            } else {
-                if ( range.maxFrameRate == fps ) {
-                    bestFormat = format;
-                    bestFrameRateRange = range;
-                }
+            // nguyenny ==> hardcode keep aspect ratio to 16/9
+            if ( range.maxFrameRate == fps && (width * 1.0 / height) == (16.0/9)) {
+                bestFormat = format;
+                bestFrameRateRange = range;
             }
         }
     }

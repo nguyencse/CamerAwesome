@@ -92,11 +92,11 @@ abstract class CameraState {
     }
 
     if (cameraContext.frameRate != null) {
-      if (next.sensor == Sensors.front) {
-        await cameraContext.setPreviewSize(1920, 1440);
-      } else {
-        await cameraContext.setPreviewSize(1920, 1080);
-      }
+      // if (next.sensor == Sensors.front) {
+      //   await cameraContext.setPreviewSize(1920, 1440);
+      // } else {
+      //   await cameraContext.setPreviewSize(1920, 1080);
+      // }
       await cameraContext.setFPS(cameraContext.frameRate!);
     }
   }
