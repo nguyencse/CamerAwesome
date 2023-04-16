@@ -27,7 +27,9 @@
 
 + (CGSize)getSizeForPresset:(NSString *)presset {
   if (presset == AVCaptureSessionPreset3840x2160) {
-    return CGSizeMake(3840, 2160);
+    // hardcode to recorde video at 1080p FHD
+    return CGSizeMake(1920, 1080);
+//    return CGSizeMake(3840, 2160);
   } else if (presset == AVCaptureSessionPreset1920x1080) {
     return CGSizeMake(1920, 1080);
   } else if (presset == AVCaptureSessionPreset1280x720) {
