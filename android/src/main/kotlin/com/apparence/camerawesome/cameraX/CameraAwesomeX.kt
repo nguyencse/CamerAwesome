@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CaptureRequest
 import android.location.Location
 import android.os.Build
 import android.os.CountDownTimer
@@ -14,8 +15,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Messenger
 import android.util.Log
+import android.util.Range
 import android.util.Rational
 import android.util.Size
+import androidx.camera.camera2.interop.Camera2CameraControl
+import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
@@ -111,7 +115,8 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
         captureMode: String,
         enableImageStream: Boolean,
         exifPreferences: ExifPreferences,
-        callback: (Result<Boolean>) -> Unit
+        frameRate: Int?,
+        callback: (Result<Boolean>) -> Unit,
     ) {
         if (enablePhysicalButton) {
             val serviceIntent = Intent(activity!!, PlayerService::class.java)
@@ -134,14 +139,17 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
             if (CameraSensor.valueOf(sensor) == CameraSensor.BACK) CameraSelector.DEFAULT_BACK_CAMERA else CameraSelector.DEFAULT_FRONT_CAMERA
 
         val mode = CaptureModes.valueOf(captureMode)
-        cameraState = CameraXState(textureRegistry!!,
+        cameraState = CameraXState(
+            textureRegistry!!,
             textureEntry!!,
             cameraProvider = cameraProvider,
             cameraSelector = cameraSelector,
             mirrorFrontCamera = mirrorFrontCamera,
             currentCaptureMode = mode,
             enableImageStream = enableImageStream,
-            onStreamReady = { state -> state.updateLifecycle(activity!!) }).apply {
+            onStreamReady = { state -> state.updateLifecycle(activity!!) },
+            frameRate = frameRate,
+        ).apply {
             this.updateAspectRatio(aspectRatio)
             this.flashMode = FlashMode.valueOf(flashMode)
         }
@@ -563,6 +571,22 @@ class CameraAwesomeX : CameraInterface, FlutterPlugin, ActivityAware {
                 actualBrightnessValue.roundToInt()
             )
         }
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    override fun configFPS(fps: Int) {
+        Log.e("nguyencse", "configFPS: $fps")
+        try {
+            cameraState.previewCamera?.let {
+                val cameraControl = Camera2CameraControl.from(it.cameraControl)
+                cameraControl.captureRequestOptions = CaptureRequestOptions.Builder()
+                    .setCaptureRequestOption(
+                        CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
+                        Range(fps, fps)
+                    )
+                    .build()
+            }
+        } catch (_: Exception) {}
     }
 
     override fun getMaxZoom(): Double {

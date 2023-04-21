@@ -3,13 +3,17 @@ package com.apparence.camerawesome.cameraX
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CaptureRequest
 import android.util.Log
+import android.util.Range
 import android.util.Rational
 import android.util.Size
 import android.view.Surface
 import androidx.camera.camera2.internal.compat.CameraCharacteristicsCompat
 import androidx.camera.camera2.internal.compat.quirk.CamcorderProfileResolutionQuirk
+import androidx.camera.camera2.interop.Camera2CameraControl
 import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.*
@@ -47,6 +51,7 @@ data class CameraXState(
     var flashMode: FlashMode = FlashMode.NONE,
     val onStreamReady: (state: CameraXState) -> Unit,
     var mirrorFrontCamera: Boolean = false,
+    val frameRate: Int? = null,
 ) : EventChannel.StreamHandler, SensorOrientation {
 
     var imageAnalysisBuilder: ImageAnalysisBuilder? = null
@@ -140,6 +145,16 @@ data class CameraXState(
                 // TODO Orientation might be wrong, to be verified
                 .setViewPort(ViewPort.Builder(rational, Surface.ROTATION_0).build()).build(),
         )
+
+        if (frameRate != null) {
+            val cameraControl = Camera2CameraControl.from(previewCamera!!.cameraControl)
+            cameraControl.captureRequestOptions = CaptureRequestOptions.Builder()
+                .setCaptureRequestOption(
+                    CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
+                    Range(frameRate, frameRate)
+                )
+                .build()
+        }
 
         previewCamera!!.cameraControl.enableTorch(flashMode == FlashMode.ALWAYS)
     }

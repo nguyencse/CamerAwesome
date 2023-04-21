@@ -168,6 +168,7 @@ class CamerawesomePlugin {
     bool enablePhysicalButton, {
     CaptureMode captureMode = CaptureMode.photo,
     required ExifPreferences exifPreferences,
+    int? frameRate,
   }) async {
     return CameraInterface()
         .setupCamera(
@@ -180,6 +181,7 @@ class CamerawesomePlugin {
           captureMode.name.toUpperCase(),
           enableImageStream,
           exifPreferences,
+          frameRate,
         )
         .then((value) => true);
   }

@@ -536,7 +536,9 @@ class CameraInterface {
       String arg_flashMode,
       String arg_captureMode,
       bool arg_enableImageStream,
-      ExifPreferences arg_exifPreferences) async {
+      ExifPreferences arg_exifPreferences,
+      int? arg_frameRate,
+  ) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraInterface.setupCamera', codec,
         binaryMessenger: _binaryMessenger);
@@ -549,7 +551,8 @@ class CameraInterface {
       arg_flashMode,
       arg_captureMode,
       arg_enableImageStream,
-      arg_exifPreferences
+      arg_exifPreferences,
+      arg_frameRate,
     ]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
