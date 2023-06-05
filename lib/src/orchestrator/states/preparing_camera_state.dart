@@ -133,7 +133,7 @@ class PreparingCameraState extends CameraState {
     if (cameraContext.frameRate != null) {
       // TODO: nguyenny ==> hardcode size 1920x1080. Remove later
       // await CamerawesomePlugin.setPreviewSize(1920, 1080);
-      // await CamerawesomePlugin.configFPS(cameraContext.frameRate!);
+      await CamerawesomePlugin.configFPS(cameraContext.frameRate!);
     }
     cameraContext.changeState(VideoCameraState.from(cameraContext));
 
