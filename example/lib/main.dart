@@ -42,7 +42,7 @@ class CameraPage extends StatelessWidget {
           onMediaTap: (mediaCapture) {
             OpenFile.open(mediaCapture.filePath);
           },
-          frameRate: 60,
+          fps: 60,
         ),
       ),
     );

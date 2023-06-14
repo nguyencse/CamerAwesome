@@ -58,7 +58,7 @@ class CameraContext {
   /// [back] sensor frequently has flash while [front] does not for instance.
   ValueStream<SensorConfig> get sensorConfig$ => sensorConfigController.stream;
 
-  int? frameRate;
+  int? fps;
 
   CameraContext._({
     required this.initialCaptureMode,
@@ -69,7 +69,7 @@ class CameraContext {
     required this.filterController,
     required this.enablePhysicalButton,
     this.onPermissionsResult,
-    this.frameRate,
+    this.fps,
   }) {
     var preparingState = PreparingCameraState(
       this,
@@ -90,7 +90,7 @@ class CameraContext {
     required ExifPreferences exifPreferences,
     required AwesomeFilter filter,
     required bool enablePhysicalButton,
-    int? frameRate,
+    int? fps,
   }) : this._(
           initialCaptureMode: initialCaptureMode,
           sensorConfigController: BehaviorSubject.seeded(sensorConfig),
@@ -105,7 +105,7 @@ class CameraContext {
                 )
               : null,
           exifPreferences: exifPreferences,
-          frameRate: frameRate,
+          fps: fps,
         );
 
   changeState(CameraState newState) async {

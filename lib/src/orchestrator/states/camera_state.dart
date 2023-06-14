@@ -90,15 +90,6 @@ abstract class CameraState {
     if (flash != null) {
       await next.setFlashMode(flash);
     }
-
-    if (cameraContext.frameRate != null) {
-      // if (next.sensor == Sensors.front) {
-      //   await cameraContext.setPreviewSize(1920, 1440);
-      // } else {
-      //   await cameraContext.setPreviewSize(1920, 1080);
-      // }
-      await cameraContext.setFPS(cameraContext.frameRate!);
-    }
   }
 
   void setSensorType(SensorType type, String deviceId) {

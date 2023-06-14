@@ -65,7 +65,7 @@ class PreparingCameraState extends CameraState {
     SensorConfig sensorConfig, {
     required bool enableImageStream,
     required bool enablePhysicalButton,
-    required int frameRate,
+    required int fps,
   }) async {
     // wait user accept permissions to init widget completely on android
     if (Platform.isAndroid) {
@@ -75,7 +75,7 @@ class PreparingCameraState extends CameraState {
             _init(
               enableImageStream: enableImageStream,
               enablePhysicalButton: enablePhysicalButton,
-              frameRate: frameRate,
+              fps: fps,
             );
           }
           if (onPermissionsResult != null) {
@@ -128,13 +128,8 @@ class PreparingCameraState extends CameraState {
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
-      frameRate: cameraContext.frameRate!,
+      fps: cameraContext.fps!,
     );
-    if (cameraContext.frameRate != null) {
-      // TODO: nguyenny ==> hardcode size 1920x1080. Remove later
-      // await CamerawesomePlugin.setPreviewSize(1920, 1080);
-      await CamerawesomePlugin.configFPS(cameraContext.frameRate!);
-    }
     cameraContext.changeState(VideoCameraState.from(cameraContext));
 
     return CamerawesomePlugin.start();
@@ -145,7 +140,7 @@ class PreparingCameraState extends CameraState {
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
-      frameRate: cameraContext.frameRate!,
+      fps: cameraContext.fps!,
     );
     cameraContext.changeState(PhotoCameraState.from(cameraContext));
 
@@ -157,7 +152,7 @@ class PreparingCameraState extends CameraState {
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
-      frameRate: cameraContext.frameRate!,
+      fps: cameraContext.fps!,
     );
     cameraContext.changeState(PreviewCameraState.from(cameraContext));
 
@@ -169,7 +164,7 @@ class PreparingCameraState extends CameraState {
     await _init(
       enableImageStream: cameraContext.imageAnalysisEnabled,
       enablePhysicalButton: cameraContext.enablePhysicalButton,
-      frameRate: cameraContext.frameRate!,
+      fps: cameraContext.fps!,
     );
 
     // On iOS, we need to start the camera to get the first frame because there
@@ -185,13 +180,13 @@ class PreparingCameraState extends CameraState {
   Future<bool> _init({
     required bool enableImageStream,
     required bool enablePhysicalButton,
-    required int frameRate,
+    required int fps,
   }) async {
     initPermissions(
       sensorConfig,
       enableImageStream: enableImageStream,
       enablePhysicalButton: enablePhysicalButton,
-      frameRate: frameRate,
+      fps: fps,
     );
     await CamerawesomePlugin.init(
       sensorConfig,
@@ -199,7 +194,7 @@ class PreparingCameraState extends CameraState {
       enablePhysicalButton,
       captureMode: nextCaptureMode,
       exifPreferences: cameraContext.exifPreferences,
-      frameRate: frameRate,
+      fps: fps,
     );
     _isReady = true;
     return _isReady;

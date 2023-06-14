@@ -319,7 +319,7 @@ FlutterEventSink physicalButtonEventSink;
                                        enablePhysicalButton:[enablePhysicalButton boolValue]
                                             aspectRatioMode:aspectRatioMode
                                                 captureMode:captureModeType
-                                                        fps: fps
+                                                        fps:[fps intValue]
                                                  completion:completion
                                               dispatchQueue:dispatch_queue_create("camerawesome.dispatchqueue", NULL)];
   [self->_registry textureFrameAvailable:self->_textureId];

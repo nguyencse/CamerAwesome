@@ -116,7 +116,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
   /// do image analysis
   final bool showPreview;
 
-  final int? frameRate;
+  final int? fps;
 
   const CameraAwesomeBuilder._({
     required this.sensor,
@@ -142,7 +142,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     this.previewPadding = EdgeInsets.zero,
     this.previewAlignment = Alignment.center,
     this.showPreview = true,
-    this.frameRate,
+    this.fps,
   });
 
   /// Use the camera with the built-in interface.
@@ -194,7 +194,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     Widget Function(CameraState state)? middleContentBuilder,
     EdgeInsets previewPadding = EdgeInsets.zero,
     Alignment previewAlignment = Alignment.center,
-    int? frameRate,
+    int? fps,
   }) : this._(
           sensor: sensor,
           flashMode: flashMode,
@@ -226,7 +226,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
           theme: theme ?? AwesomeTheme(),
           previewPadding: previewPadding,
           previewAlignment: previewAlignment,
-          frameRate: frameRate,
+          fps: fps,
         );
 
   /// 🚧 Experimental
@@ -253,7 +253,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
     AwesomeTheme? theme,
     EdgeInsets previewPadding = EdgeInsets.zero,
     Alignment previewAlignment = Alignment.center,
-    int? frameRate,
+    int? fps,
   }) : this._(
           sensor: sensor,
           flashMode: flashMode,
@@ -277,7 +277,7 @@ class CameraAwesomeBuilder extends StatefulWidget {
           theme: theme ?? AwesomeTheme(),
           previewPadding: previewPadding,
           previewAlignment: previewAlignment,
-          frameRate: frameRate,
+          fps: fps,
         );
 
   /// Use this constructor when you don't want to take pictures or record videos.
@@ -427,7 +427,7 @@ class _CameraWidgetBuilder extends State<CameraAwesomeBuilder> with WidgetsBindi
       onImageForAnalysis: widget.onImageForAnalysis,
       analysisConfig: widget.imageAnalysisConfig,
       exifPreferences: widget.exifPreferences ?? ExifPreferences(saveGPSLocation: false),
-      frameRate: widget.frameRate,
+      fps: widget.fps,
     );
 
     // Initial CameraState is always PreparingState
