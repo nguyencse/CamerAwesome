@@ -12,8 +12,7 @@ class VideoRecordingCameraState extends CameraState {
     required this.filePathBuilder,
   }) : super(cameraContext);
 
-  factory VideoRecordingCameraState.from(CameraContext orchestrator) =>
-      VideoRecordingCameraState(
+  factory VideoRecordingCameraState.from(CameraContext orchestrator) => VideoRecordingCameraState(
         cameraContext: orchestrator,
         filePathBuilder: orchestrator.saveConfig!.videoPathBuilder!,
       );
@@ -41,8 +40,7 @@ class VideoRecordingCameraState extends CameraState {
       throw "Trying to pause a media capture in status ${currentCapture.status} instead of ${MediaCaptureStatus.capturing}";
     }
     await CamerawesomePlugin.pauseVideoRecording();
-    _mediaCapture = MediaCapture.capturing(
-        filePath: currentCapture.filePath, videoState: VideoState.paused);
+    _mediaCapture = MediaCapture.capturing(filePath: currentCapture.filePath, videoState: VideoState.paused);
   }
 
   /// Resumes a video recording.
@@ -55,8 +53,7 @@ class VideoRecordingCameraState extends CameraState {
       throw "Trying to pause a media capture in status ${currentCapture.status} instead of ${MediaCaptureStatus.capturing}";
     }
     await CamerawesomePlugin.resumeVideoRecording();
-    _mediaCapture = MediaCapture.capturing(
-        filePath: currentCapture.filePath, videoState: VideoState.resumed);
+    _mediaCapture = MediaCapture.capturing(filePath: currentCapture.filePath, videoState: VideoState.resumed);
   }
 
   // TODO Video recording might end due to other reasons (not enough space left...)

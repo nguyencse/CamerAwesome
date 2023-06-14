@@ -83,7 +83,7 @@ abstract class CameraState {
     if (aspectRatio != null) {
       await next.setAspectRatio(aspectRatio);
     }
-    
+
     if (zoom != null) {
       await next.setZoom(zoom);
     }

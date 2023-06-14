@@ -232,6 +232,7 @@ abstract class CameraInterface {
     bool mirrorFrontCamera,
     bool enablePhysicalButton,
     String flashMode,
+    int fps,
     String captureMode,
     bool enableImageStream,
     ExifPreferences exifPreferences,

@@ -528,16 +528,16 @@ class CameraInterface {
   static const MessageCodec<Object?> codec = _CameraInterfaceCodec();
 
   Future<bool> setupCamera(
-      String arg_sensor,
-      String arg_aspectRatio,
-      double arg_zoom,
-      bool arg_mirrorFrontCamera,
-      bool arg_enablePhysicalButton,
-      String arg_flashMode,
-      String arg_captureMode,
-      bool arg_enableImageStream,
-      ExifPreferences arg_exifPreferences,
-      int? arg_frameRate,
+    String arg_sensor,
+    String arg_aspectRatio,
+    double arg_zoom,
+    bool arg_mirrorFrontCamera,
+    bool arg_enablePhysicalButton,
+    String arg_flashMode,
+    String arg_captureMode,
+    int arg_fps,
+    bool arg_enableImageStream,
+    ExifPreferences arg_exifPreferences,
   ) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CameraInterface.setupCamera', codec,
@@ -550,9 +550,9 @@ class CameraInterface {
       arg_enablePhysicalButton,
       arg_flashMode,
       arg_captureMode,
+      arg_fps,
       arg_enableImageStream,
       arg_exifPreferences,
-      arg_frameRate,
     ]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(

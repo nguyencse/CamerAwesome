@@ -50,6 +50,7 @@ AVCaptureAudioDataOutputSampleBufferDelegate>
 @property(readonly, nonatomic) AspectRatio aspectRatio;
 @property(readonly, nonatomic) bool saveGPSLocation;
 @property(readonly, nonatomic) bool mirrorFrontCamera;
+@property(readonly, nonatomic) int fps;
 @property(readonly) _Atomic(CVPixelBufferRef) latestPixelBuffer;
 @property(readonly, nonatomic) CGSize currentPreviewSize;
 @property(readonly, nonatomic) ImageStreamController *imageStreamController;
@@ -66,7 +67,8 @@ AVCaptureAudioDataOutputSampleBufferDelegate>
                 enablePhysicalButton:(BOOL)enablePhysicalButton
                      aspectRatioMode:(AspectRatio)aspectRatioMode
                          captureMode:(CaptureModes)captureMode
-                          completion:(nonnull void (^)(NSNumber * _Nullable, FlutterError * _Nullable))completion
+                                 fps:(int)fps
+                          completion:(nonnull void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion
                        dispatchQueue:(dispatch_queue_t)dispatchQueue;
 - (void)setPreviewSize:(CGSize)previewSize error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error;
 - (void)setImageStreamEvent:(FlutterEventSink)imageStreamEventSink;
@@ -97,7 +99,7 @@ AVCaptureAudioDataOutputSampleBufferDelegate>
 - (CGSize)getEffectivPreviewSize;
 - (void)setUpCaptureSessionForAudioError:(nonnull void (^)(NSError *))error;
 - (void)setBrightness:(NSNumber *)brightness error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error;
-- (void)configFPS:(NSNumber *)frameRate error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error;
+- (void)configFPS:(NSNumber *)frameRate;
 @end
 
 NS_ASSUME_NONNULL_END

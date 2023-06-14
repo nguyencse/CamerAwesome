@@ -17,6 +17,7 @@
                 enablePhysicalButton:(BOOL)enablePhysicalButton
                      aspectRatioMode:(AspectRatio)aspectRatioMode
                          captureMode:(CaptureModes)captureMode
+                                 fps:(int)fps
                           completion:(nonnull void (^)(NSNumber * _Nullable, FlutterError * _Nullable))completion
                        dispatchQueue:(dispatch_queue_t)dispatchQueue {
   self = [super init];
@@ -63,6 +64,13 @@
   }
   
   [self setBestPreviewQuality];
+
+  if (fps > 0) {
+    [self setFPS:fps];
+
+    NSNumber *nsFPS = [NSNumber numberWithInteger:fps];
+    [self configFPS:nsFPS];
+  }
   
   return self;
 }
@@ -297,7 +305,11 @@
   }
 }
 
-- (void)configFPS:(NSNumber *)frameRate error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error{
+- (void)setFPS:(int)fps {
+    _fps = fps;
+}
+
+- (void)configFPS:(NSNumber *)frameRate{
     int fps = [frameRate intValue];
 
     AVCaptureDeviceFormat *bestFormat = nil;
@@ -308,8 +320,7 @@
             NSInteger width = dimensions.width;
             NSInteger height = dimensions.height;
             
-            // nguyenny ==> hardcode keep aspect ratio to 16/9
-            if ( range.maxFrameRate == fps && (width * 1.0 / height) == (16.0/9)) {
+            if (range.maxFrameRate == fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
                 bestFormat = format;
                 bestFrameRateRange = range;
             }
@@ -318,8 +329,8 @@
     
     NSLog(@"nguyenny ==> best format %@",bestFormat);
     
-    if ( bestFormat ) {
-        if ( [_captureDevice lockForConfiguration:NULL] == YES ) {
+    if (bestFormat) {
+        if ([_captureDevice lockForConfiguration:NULL] == YES) {
             _captureDevice.activeFormat = bestFormat;
             _captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
             _captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;

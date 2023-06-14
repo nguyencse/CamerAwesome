@@ -194,8 +194,8 @@ FlutterEventSink physicalButtonEventSink;
   [_camera setBrightness:brightness error:error];
 }
 
-- (void)configFPS:(nonnull NSNumber *)frameRate error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
-  [_camera configFPS:frameRate error:error];
+- (void)configFPS:(nonnull NSNumber *)frameRate {
+  [_camera configFPS:frameRate];
 }
 
 - (void)setExifPreferencesExifPreferences:(ExifPreferences *)exifPreferences completion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion{
@@ -283,7 +283,17 @@ FlutterEventSink physicalButtonEventSink;
   return [_camera getSensors:AVCaptureDevicePositionBack];
 }
 
-- (void)setupCameraSensor:(nonnull NSString *)sensor aspectRatio:(nonnull NSString *)aspectRatio zoom:(nonnull NSNumber *)zoom mirrorFrontCamera:(nonnull NSNumber *)mirrorFrontCamera enablePhysicalButton:(nonnull NSNumber *)enablePhysicalButton flashMode:(nonnull NSString *)flashMode captureMode:(nonnull NSString *)captureMode enableImageStream:(nonnull NSNumber *)enableImageStream exifPreferences:(nonnull ExifPreferences *)exifPreferences completion:(nonnull void (^)(NSNumber * _Nullable, FlutterError * _Nullable))completion {
+- (void)setupCameraSensor:(nonnull NSString *)sensor
+              aspectRatio:(nonnull NSString *)aspectRatio
+                     zoom:(nonnull NSNumber *)zoom
+        mirrorFrontCamera:(nonnull NSNumber *)mirrorFrontCamera
+     enablePhysicalButton:(nonnull NSNumber *)enablePhysicalButton
+                flashMode:(nonnull NSString *)flashMode
+              captureMode:(nonnull NSString *)captureMode
+                      fps:(nonnull NSNumber *)fps
+        enableImageStream:(nonnull NSNumber *)enableImageStream
+          exifPreferences:(nonnull ExifPreferences *)exifPreferences
+               completion:(nonnull void (^)(NSNumber * _Nullable, FlutterError * _Nullable))completion {
   if (![CameraPermissionsController checkAndRequestPermission]) {
     completion(nil, [FlutterError errorWithCode:@"MISSING_PERMISSION" message:@"you got to accept all permissions" details:nil]);
     return;
@@ -309,6 +319,7 @@ FlutterEventSink physicalButtonEventSink;
                                        enablePhysicalButton:[enablePhysicalButton boolValue]
                                             aspectRatioMode:aspectRatioMode
                                                 captureMode:captureModeType
+                                                        fps: fps
                                                  completion:completion
                                               dispatchQueue:dispatch_queue_create("camerawesome.dispatchqueue", NULL)];
   [self->_registry textureFrameAvailable:self->_textureId];
