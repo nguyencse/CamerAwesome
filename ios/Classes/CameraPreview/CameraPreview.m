@@ -320,7 +320,8 @@
             NSInteger width = dimensions.width;
             NSInteger height = dimensions.height;
             
-            if (range.maxFrameRate == fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
+            // if (range.maxFrameRate == fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
+            if (range.maxFrameRate >= fps && range.minFrameRate <= fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
                 bestFormat = format;
                 bestFrameRateRange = range;
             }
@@ -332,8 +333,10 @@
     if (bestFormat) {
         if ([_captureDevice lockForConfiguration:NULL] == YES) {
             _captureDevice.activeFormat = bestFormat;
-            _captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
-            _captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+            // _captureDevice.activeVideoMinFrameDuration = bestFrameRateRange.minFrameDuration;
+            // _captureDevice.activeVideoMaxFrameDuration = bestFrameRateRange.minFrameDuration;
+            _captureDevice.activeVideoMinFrameDuration = CMTimeMake(1, fps);
+            _captureDevice.activeVideoMaxFrameDuration = CMTimeMake(1, fps);
             [_captureDevice unlockForConfiguration];
         }
     }
