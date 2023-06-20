@@ -320,8 +320,7 @@
             NSInteger width = dimensions.width;
             NSInteger height = dimensions.height;
             
-            // if (range.maxFrameRate == fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
-            if (range.maxFrameRate >= fps && range.minFrameRate <= fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
+            if (range.maxFrameRate == fps && width == _currentPreviewSize.width && height == _currentPreviewSize.height) {
                 bestFormat = format;
                 bestFrameRateRange = range;
             }
